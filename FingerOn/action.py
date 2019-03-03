@@ -2,10 +2,14 @@ from . import uri_parser
 
 class Action:
 
-    def __init__(self, action_type, uri, func):
+    def __init__(self, action_type, uri, func, **kwargs):
         self.action_param_type = action_type
         self.func = func
         self.uri = uri_parser.URIParser(uri)
+        if 'methods' in kwargs:
+            self.methods = kwargs['methods']
+        else:
+            self.methods = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
     def action_type(self):
         return self.action_param_type
@@ -13,8 +17,8 @@ class Action:
     def action(self):
         return self.func
 
-    def match(self, uri):
-        return self.uri.match(uri)
+    def match(self, env):
+        return self.uri.match(env['PATH_INFO']) and env['REQUEST_METHOD'] in self.methods
 
     def __uri_param(self, uri):
         return self.uri.param(uri)
@@ -26,6 +30,7 @@ class Action:
         for param in uri_params:
             dict_args[param[0]] = param[1]
         # TODO add body
+        print(env)
 
         return self.func(**dict_args)
 

@@ -6,8 +6,8 @@ class Router:
     def add_action(self, action):
         self.actions.append(action)
 
-    def get(self, uri):
+    def get(self, env):
         for action in self.actions:
-            if action.match(uri):
+            if action.match(env):
                 return action
         return None
